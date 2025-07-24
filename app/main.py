@@ -1,4 +1,3 @@
-import os
 import imageio_ffmpeg
 
 ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
@@ -24,9 +23,13 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.routes import recitation
 
+from transformers import RobertaForTokenClassification, AutoTokenizer
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.state.model = whisper.load_model("tiny")
+    app.state.whisper_model = whisper.load_model("tiny")
+    app.state.diacritizer_model = RobertaForTokenClassification.from_pretrained("guymorlan/levanti_arabic2diacritics")
+    app.state.diacritizer_tokenizer = AutoTokenizer.from_pretrained("guymorlan/levanti_arabic2diacritics")
     yield
 
 app = FastAPI(lifespan=lifespan)

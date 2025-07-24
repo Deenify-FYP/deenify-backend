@@ -2,6 +2,7 @@ from typing import TypedDict
 from fastapi import UploadFile,Request
 from app.utils.fetch_ayah_data import fetch_ayah_data
 from app.utils.transcribe_audio import transcribe_audio
+from app.utils.diacritize import arabic_diacritize
 
 class AyahTypesenseSchema(TypedDict):
     id: int
@@ -29,9 +30,12 @@ async def process_recitation(request:Request,audio: UploadFile, surah_number: in
 
     #Converting user's audio recitation to text
     audio_to_text = await transcribe_audio(request,audio)
-    print(audio_to_text)
+    audio_to_text = audio_to_text.strip()
+
+    diacritized_text=arabic_diacritize(request,audio_to_text)
+    print(diacritized_text)
 
     return {
         "ayah_text": ayah_document["text"],
-        "user_ayah":audio_to_text
+        "user_ayah":diacritized_text
     }

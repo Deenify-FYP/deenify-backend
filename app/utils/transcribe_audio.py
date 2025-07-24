@@ -4,7 +4,7 @@ import os
 import whisper
 
 async def transcribe_audio(request:Request,upload_file:UploadFile):
-    model:whisper.Whisper = request.app.state.model
+    model:whisper.Whisper = request.app.state.whisper_model
 
     if model is None:
         raise HTTPException(status_code=503, detail="Model not loaded yet")
